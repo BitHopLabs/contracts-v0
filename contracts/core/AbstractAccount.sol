@@ -15,8 +15,8 @@ contract AbstractAccount is IAbstractAccount {
 
     function execute(
         address wallet, uint orderId, bytes memory signature, CallParam[] memory callParams
-    ) external override returns (bool res){
-        res = IKeeper(keeper).execute(wallet, orderId, signature, callParams);
+    ) external override {
+        IKeeper(keeper).execute(wallet, orderId, signature, callParams);
     }
 
     receive() external payable {}

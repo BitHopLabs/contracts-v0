@@ -11,15 +11,16 @@ contract Keeper is IKeeper, AAStorage {
 
     function execute(
         address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
-    ) external override returns (bool) {
+    ) external override {
         (,uint dstChain, uint expTime) = Decoded.decodeOrderId(orderId);
         require(dstChain == block.chainid, "E0");
         require(expTime <= block.timestamp, "E0");
 
-        bytes memory digest = abi.encode(eoa, orderId, callParams);
+        require(Decoded.verify(eoa, keccak256(abi.encode(eoa, orderId, callParams)), signature), "");
         for (uint i = 0; i < callParams.length; i++) {
+            (bool res, ) = callParams[0].destination.call(callParams[0].data);
+            require(res, "");
         }
-        return true;
     }
 
     function create(address eoa

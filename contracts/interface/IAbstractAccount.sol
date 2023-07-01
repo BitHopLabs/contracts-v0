@@ -9,5 +9,5 @@ interface IAbstractAccount is IParam {
 
     function execute(
         address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
-    ) external returns (bool res);
+    ) external;
 }

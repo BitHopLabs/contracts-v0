@@ -13,7 +13,7 @@ interface IKeeper is IParam {
 
     function execute(
         address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
-    ) external returns (bool res);
+    ) external ;
 
     function create(address eoa) external returns (address);
 }
