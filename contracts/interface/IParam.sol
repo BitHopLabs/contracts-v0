@@ -3,6 +3,14 @@ pragma solidity ^0.8.0;
 
 interface IParam {
 
+    event OrderCreated(
+        CreateParam indexed createParam
+    );
+
+    event OrderExecuted(
+        ExecParam indexed execParam
+    );
+
     struct CreateParam {
         address relayer;
         address wallet;

@@ -42,6 +42,9 @@ contract EndPoint is IEndPoint, Ownable {
 
         ExecParam memory execParam = ExecParam(createParam.wallet, createParam.orderId, createParam.signature, createParam.feeParam, createParam.payParams, createParam.callParams);
         IRelayer(createParam.relayer).relay(dstChain, execParam);
+        emit OrderCreated(
+            createParam
+        );
     }
 
     function executeOrder(ExecParam memory execParam) external payable {
@@ -54,6 +57,9 @@ contract EndPoint is IEndPoint, Ownable {
         }
 
         IAbstractAccount(aa).execute(execParam.wallet, execParam.orderId, execParam.signature, execParam.callParams);
+        emit OrderExecuted(
+            execParam
+        );
     }
 
     function setKeeper(address _keeper) external onlyOwner {
