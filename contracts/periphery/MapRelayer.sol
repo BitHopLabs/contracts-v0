@@ -16,7 +16,7 @@ contract MapRelayer is IRelayer, Ownable {
         mos = _mos;
     }
 
-    function relay(uint dstChain, ExecParam memory execParam) external override returns (bool) {
+    function relay(uint dstChain, ExecParam memory execParam) external override {
         IMOSV3.MessageData memory mData = IMOSV3.MessageData(false, IMOSV3.MessageType.CALLDATA, abi.encodePacked(endpoints[dstChain]), abi.encodeWithSelector(IEndPoint.executeOrder.selector, execParam), execParam.feeParam.gasLimit, 0);
 
         (uint256 amount,) = IMOSV3(mos).getMessageFee(dstChain, address(0), execParam.feeParam.gasLimit);
@@ -29,8 +29,6 @@ contract MapRelayer is IRelayer, Ownable {
             ),
             "send request failed"
         );
-
-        return true;
     }
 
     function getMessageFee(uint256 _toChain, address _feeToken, uint256 _gasLimit) external view returns (uint256 amount, address notKnown) {
@@ -39,5 +37,9 @@ contract MapRelayer is IRelayer, Ownable {
 
     function setMos(address _mos) external onlyOwner {
         mos = _mos;
+    }
+
+    function setEndpoint(uint dstChain, address endpoint) external onlyOwner {
+        endpoints[dstChain] = endpoint;
     }
 }

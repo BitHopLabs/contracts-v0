@@ -9,22 +9,25 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract Keeper is IKeeper, AAStorage {
 
+    modifier verifySign(address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams) {
+        require(Decoded.verify(eoa, keccak256(abi.encode(eoa, orderId, callParams)), signature), "E0");
+        _;
+    }
+
     function execute(
         address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
-    ) external override {
+    ) external verifySign(eoa, orderId, signature, callParams) override {
         (,uint dstChain, uint expTime) = Decoded.decodeOrderId(orderId);
-        require(dstChain == block.chainid, "E0");
-        require(expTime <= block.timestamp, "E0");
-
-        require(Decoded.verify(eoa, keccak256(abi.encode(eoa, orderId, callParams)), signature), "");
+        require((dstChain == block.chainid && expTime <= block.timestamp), "E0");
+        require(Decoded.verify(eoa, keccak256(abi.encode(eoa, orderId, callParams)), signature), "E0");
         for (uint i = 0; i < callParams.length; i++) {
-            (bool res, ) = callParams[0].destination.call(callParams[0].data);
+            (bool res,) = callParams[0].destination.call(callParams[0].data);
             require(res, "");
         }
     }
 
-    function create(address eoa
-    ) external returns (address) {
+    function create(address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
+    ) external verifySign(eoa, orderId, signature, callParams) returns (address) {
         address aa = address(new AbstractAccount(address(this)));
         require(owner[aa] == address(0), "E0");
         renewOwnership(eoa, aa);

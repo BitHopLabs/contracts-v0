@@ -7,18 +7,21 @@ import "../interface/IRelayer.sol";
 import "../interface/IEndPoint.sol";
 import "../interface/IKeeper.sol";
 import "../interface/IAbstractAccount.sol";
-import "./keeper/AAStorage.sol";
+import "../interface/IAAStorage.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract EndPoint is IEndPoint, AAStorage {
-
-    address public keeper;
-
-    constructor(address _keeper) {
-        keeper = _keeper;
-    }
+contract EndPoint is IEndPoint, Ownable {
 
     mapping(uint => mapping(address => address)) public tokenMappings;
+
+    address public keeper;
+    address public aaStorage;
+
+    constructor(address _keeper, address _aaStorage) {
+        keeper = _keeper;
+        aaStorage = _aaStorage;
+    }
 
     function createOrder(CreateParam memory createParam) external payable {
         (uint srcChain,uint dstChain,) = Decoded.decodeOrderId(createParam.orderId);
@@ -42,14 +45,26 @@ contract EndPoint is IEndPoint, AAStorage {
     }
 
     function executeOrder(ExecParam memory execParam) external payable {
-        address aa = own[execParam.wallet];
+        address aa = IAAStorage(aaStorage).own(execParam.wallet);
         if (aa == address(0)) {
-            aa = IKeeper(keeper).create(execParam.wallet);
+            aa = IKeeper(keeper).create(execParam.wallet, execParam.orderId, execParam.signature, execParam.callParams);
         }
         for (uint i = 0; i < execParam.payParams.length; i++) {
             TransferHelper.safeTransfer2(execParam.payParams[i].token, aa, execParam.payParams[i].amount);
         }
 
         IAbstractAccount(aa).execute(execParam.wallet, execParam.orderId, execParam.signature, execParam.callParams);
+    }
+
+    function setKeeper(address _keeper) external onlyOwner {
+        keeper = _keeper;
+    }
+
+    function setAAStorage(address _aaStorage) external onlyOwner {
+        aaStorage = _aaStorage;
+    }
+
+    function setTokenMappings(uint dstChain, address srcToken, address dstToken) external onlyOwner {
+        tokenMappings[dstChain][srcToken] = dstToken;
     }
 }
