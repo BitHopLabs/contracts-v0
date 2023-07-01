@@ -9,22 +9,20 @@ import "../../libraries/Decoded.sol";
 contract Keeper is IKeeper, AAStorage {
 
     function execute(
-        bytes calldata data
+        address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
     ) external override returns (bool) {
-        bytes memory payload = Decoded.verify(data);
-        (uint8 size, bytes[] memory callData) = Decoded.decodePayload(payload);
-        for (uint8 i = 0; i < size; i++) {
-
-        }
+        bytes memory digest = abi.encode(eoa, orderId, callParams);
+        require(ECDSA.recover(digest, signature) == eoa, "E1");
         return true;
     }
 
     function create(
-        bytes calldata data
-    ) external {
+    ) external returns (address) {
         address newAA = address(new AbstractAccount(address(this)));
         require(owner[newAA] == address(0), "E0");
         renewOwnership(newAA, newAA);
+
+        return newAA;
     }
 
 

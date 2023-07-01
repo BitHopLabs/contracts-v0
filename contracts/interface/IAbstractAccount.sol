@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-interface IAbstractAccount {
+import "./IParam.sol";
+
+interface IAbstractAccount is IParam {
 
     function keeper() external returns (address);
 
     function execute(
-        bytes calldata data
+        address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
     ) external returns (bool res);
 }

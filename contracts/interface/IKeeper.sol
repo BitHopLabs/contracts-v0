@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-interface IKeeper {
+import "../interface/IAAStorage.sol";
+import "./IParam.sol";
+
+interface IKeeper is IParam {
 
     event renewOwner(
         address indexed eoa,
@@ -9,10 +12,8 @@ interface IKeeper {
     );
 
     function execute(
-        bytes calldata data
+        address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
     ) external returns (bool res);
 
-    function create(
-        bytes calldata data
-    ) external;
+    function create() external returns (address);
 }
