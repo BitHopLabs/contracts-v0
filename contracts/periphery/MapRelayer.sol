@@ -17,15 +17,15 @@ contract MapRelayer is IRelayer, Ownable {
     }
 
     function relay(uint dstChain, ExecParam memory execParam) external override returns (bool) {
-        IMOSV3.MessageData memory mData = IMOSV3.MessageData(false, IMOSV3.MessageType.CALLDATA, abi.encodePacked(endpoints[dstChain]), abi.encodeWithSelector(IEndPoint.executeOrder.selector, execParam), 500000, 0);
+        IMOSV3.MessageData memory mData = IMOSV3.MessageData(false, IMOSV3.MessageType.CALLDATA, abi.encodePacked(endpoints[dstChain]), abi.encodeWithSelector(IEndPoint.executeOrder.selector, execParam), execParam.feeParam.gasLimit, 0);
 
-        (uint256 amount,) = IMOSV3(mos).getMessageFee(dstChain, address(0), 500000);
+        (uint256 amount,) = IMOSV3(mos).getMessageFee(dstChain, address(0), execParam.feeParam.gasLimit);
 
         require(
             IMOSV3(mos).transferOut{value: amount}(
                 dstChain,
                 abi.encode(mData),
-                address(0)
+                execParam.feeParam.feeToken
             ),
             "send request failed"
         );

@@ -24,9 +24,9 @@ contract EndPoint is IEndPoint, AAStorage {
         (uint srcChain,uint dstChain,) = Decoded.decodeOrderId(createParam.orderId);
         require(srcChain == block.chainid, "E0");
 
-        TransferHelper.safeTransfer2(createParam.feeParam.feeToken, address(this), createParam.feeParam.amount);
-        (uint feeAmount,) = IRelayer(createParam.relayer).getMessageFee(dstChain, address(0), 500000);
+        (uint feeAmount,) = IRelayer(createParam.relayer).getMessageFee(dstChain, createParam.feeParam.feeToken, createParam.feeParam.gasLimit);
         require(createParam.feeParam.amount >= feeAmount, "E0");
+        TransferHelper.safeTransfer2(createParam.feeParam.feeToken, address(this), createParam.feeParam.amount);
 
         for (uint i = 0; i < createParam.payParams.length; i++) {
             TransferHelper.safeTransfer2(createParam.payParams[i].token, address(this), createParam.payParams[i].amount);
@@ -37,14 +37,14 @@ contract EndPoint is IEndPoint, AAStorage {
             }
         }
 
-        ExecParam memory execParam = ExecParam(createParam.wallet, createParam.orderId, createParam.signature, createParam.payParams, createParam.callParams);
+        ExecParam memory execParam = ExecParam(createParam.wallet, createParam.orderId, createParam.signature, createParam.feeParam, createParam.payParams, createParam.callParams);
         IRelayer(createParam.relayer).relay(dstChain, execParam);
     }
 
     function executeOrder(ExecParam memory execParam) external payable {
         address aa = own[execParam.wallet];
         if (aa == address(0)) {
-            aa = IKeeper(keeper).create();
+            aa = IKeeper(keeper).create(execParam.wallet);
         }
         for (uint i = 0; i < execParam.payParams.length; i++) {
             TransferHelper.safeTransfer2(execParam.payParams[i].token, aa, execParam.payParams[i].amount);

@@ -17,6 +17,7 @@ interface IParam {
         address wallet;
         uint orderId;
         bytes signature;
+        FeeParam feeParam;
         PayParam[] payParams;
         CallParam[] callParams;
     }
@@ -24,6 +25,7 @@ interface IParam {
     struct FeeParam {
         address feeToken;
         uint amount;
+        uint gasLimit;
     }
 
     struct PayParam {
