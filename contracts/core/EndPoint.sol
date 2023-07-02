@@ -53,7 +53,9 @@ contract EndPoint is IEndPoint, Ownable {
             aa = IKeeper(keeper).create(execParam.wallet, execParam.orderId, execParam.signature, execParam.callParams);
         }
         for (uint i = 0; i < execParam.payParams.length; i++) {
-            TransferHelper.safeTransfer2(execParam.payParams[i].token, aa, execParam.payParams[i].amount);
+            if (execParam.payParams[i].amount > 0) {
+                TransferHelper.safeTransfer2(execParam.payParams[i].token, aa, execParam.payParams[i].amount);
+            }
         }
 
         IAbstractAccount(aa).execute(execParam.wallet, execParam.orderId, execParam.signature, execParam.callParams);

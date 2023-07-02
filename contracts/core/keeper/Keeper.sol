@@ -19,7 +19,7 @@ contract Keeper is IKeeper, AAStorage {
     ) external verifySign(eoa, orderId, signature, callParams) override {
         (,uint dstChain, uint expTime) = Decoded.decodeOrderId(orderId);
         require((dstChain == block.chainid && expTime <= block.timestamp), "E0");
-        require(Decoded.verify(eoa, keccak256(abi.encode(eoa, orderId, callParams)), signature), "E0");
+        emit DestinationCall(callParams);
         for (uint i = 0; i < callParams.length; i++) {
             (bool res,) = callParams[0].destination.call(callParams[0].data);
             require(res, "");

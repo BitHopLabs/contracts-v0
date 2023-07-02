@@ -11,6 +11,10 @@ interface IParam {
         ExecParam indexed execParam
     );
 
+    event DestinationCall(
+        CallParam[] indexed params
+    );
+
     struct CreateParam {
         address relayer;
         address wallet;
