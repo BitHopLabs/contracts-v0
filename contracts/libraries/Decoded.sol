@@ -6,7 +6,8 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 library Decoded {
 
     function verify(address eoa, bytes32 digest, bytes calldata signature) external pure returns (bool) {
-        return eoa == ECDSA.recover(digest, signature);
+        bytes32 message = ECDSA.toEthSignedMessageHash(digest);
+        return eoa == ECDSA.recover(message, signature);
     }
 
     function genOrderId(

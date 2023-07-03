@@ -18,7 +18,7 @@ contract Keeper is IKeeper, AAStorage {
         address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
     ) external verifySign(eoa, orderId, signature, callParams) override {
         (,uint dstChain, uint expTime) = Decoded.decodeOrderId(orderId);
-        require((dstChain == block.chainid && expTime <= block.timestamp), "E0");
+        require((dstChain == block.chainid && expTime >= block.timestamp), "E1");
         emit DestinationCall(callParams);
         for (uint i = 0; i < callParams.length; i++) {
             (bool res,) = callParams[0].destination.call(callParams[0].data);
@@ -29,7 +29,7 @@ contract Keeper is IKeeper, AAStorage {
     function create(address eoa, uint orderId, bytes memory signature, CallParam[] memory callParams
     ) external verifySign(eoa, orderId, signature, callParams) returns (address) {
         address aa = address(new AbstractAccount(address(this)));
-        require(owner[aa] == address(0), "E0");
+        require(owner[aa] == address(0), "E2");
         renewOwnership(eoa, aa);
         return aa;
     }
