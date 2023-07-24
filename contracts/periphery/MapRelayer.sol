@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "../interface/IRelayer.sol";
@@ -21,14 +22,12 @@ contract MapRelayer is IRelayer, Ownable {
 
         (uint256 amount,) = IMOSV3(mos).getMessageFee(dstChain, address(0), execParam.feeParam.gasLimit);
 
-        require(
-            IMOSV3(mos).transferOut{value: amount}(
-                dstChain,
-                abi.encode(mData),
-                execParam.feeParam.feeToken
-            ),
-            "send request failed"
+        bytes32 orderId = IMOSV3(mos).transferOut{value: amount}(
+            dstChain,
+            abi.encode(mData),
+            execParam.feeParam.feeToken
         );
+        emit bridgeOrder(orderId);
     }
 
     function getMessageFee(uint256 _toChain, address _feeToken, uint256 _gasLimit) external view returns (uint256 amount, address notKnown) {

@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "../libraries/TransferHelper.sol";
@@ -31,11 +32,13 @@ contract EndPoint is IEndPoint, Ownable {
         TransferHelper.safeTransfer2(createParam.feeParam.feeToken, address(this), createParam.feeParam.amount);
 
         for (uint i = 0; i < createParam.payParams.length; i++) {
-            TransferHelper.safeTransfer2(createParam.payParams[i].token, address(this), createParam.payParams[i].amount);
-            if (createParam.payParams[i].token != address(0)) {
-                address tokenOut = tokenMappings[dstChain][createParam.payParams[i].token];
-                require(tokenOut != address(0), "E5");
-                createParam.payParams[i].token = tokenOut;
+            if (createParam.payParams[i].amount > 0) {
+                TransferHelper.safeTransfer2(createParam.payParams[i].token, address(this), createParam.payParams[i].amount);
+                if (createParam.payParams[i].token != address(0)) {
+                    address tokenOut = tokenMappings[dstChain][createParam.payParams[i].token];
+                    require(tokenOut != address(0), "E5");
+                    createParam.payParams[i].token = tokenOut;
+                }
             }
         }
 

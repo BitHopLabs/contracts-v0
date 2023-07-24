@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 interface IMOSV3 {
 
-    enum chainType{
+    enum ChainType{
         NULL,
         EVM,
         NEAR
@@ -23,16 +24,16 @@ interface IMOSV3 {
         uint256 value;
     }
 
-    function transferOut(uint256 _toChain, bytes memory _messageData, address _feeToken) external payable returns (bool);
+    function getMessageFee(uint256 toChain, address feeToken, uint256 gasLimit) external view returns (uint256, address);
 
-    function addRemoteCaller(uint256 _fromChain, bytes memory _fromAddress, bool _tag) external;
+    function transferOut(uint256 toChain, bytes memory messageData, address feeToken) external payable returns (bytes32);
 
-    function getMessageFee(uint256 _toChain, address _feeToken, uint256 _gasLimit) external view returns (uint256, address);
+    function addRemoteCaller(uint256 fromChain, bytes memory fromAddress, bool tag) external;
 
-    function callerList(address _mos, uint256 _fromchain, bytes memory _fromAddress) external returns (bool _tag);
+    function getExecutePermission(address mosAddress, uint256 fromChainId, bytes memory fromAddress) external view returns (bool);
 
-    event mapMessageOut(uint256 indexed fromChain, uint256 indexed toChain, bytes32 orderId, bytes callData);
+    event mapMessageOut(uint256 indexed fromChain, uint256 indexed toChain, bytes32 orderId, bytes fromAddrss, bytes callData);
 
-    event mapMessageIn(uint256 indexed fromChain, uint256 indexed toChain, bytes32 orderId, bool executeTag);
+    event mapMessageIn(uint256 indexed fromChain, uint256 indexed toChain, bytes32 orderId, bytes fromAddrss, bytes callData, bool result, bytes reason);
 
 }
