@@ -8,17 +8,17 @@ async function main() {
     // dst chain
     const testCallContract = "0xb8eD16baa9e71d9EE85F30e83Cf1D226732aebDd"
     // src chain
-    const mapRelayerContract = "0xC83544dA67CE2545211bc45c7B9AdF6174525956"
+    const mapRelayerContract = "0xA976496f9224A02965824275384A0B09A9d853f3"
 
     // src chain
-    const endPoint = await ethers.getContractAt("EndPoint", "0x76447028B32c23200E68deFb3A4698DAa5149732");
+    const endPoint = await ethers.getContractAt("EndPoint", "0x4c97aA9734f4ea54a58874889Df0a9d6f0589a53");
     console.log("endPoint " + endPoint.address);
 
     const signer = new ethers.Wallet("72dcee7bebb7554678b9c4000ce11a3f14000d588176c4f5b8af00657e113dc5");
     const orderId = genOrderId(80001, 97);
     console.log("orderId " + orderId);
 
-
+    // logic
     let testCallInterface = new ethers.utils.Interface(TestCallAbi);
     let data = testCallInterface.encodeFunctionData("callFunction0", ["0", signer.address, ethers.constants.AddressZero]);
     console.log("data " + data)

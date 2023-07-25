@@ -30,7 +30,7 @@ contract EndPoint is IEndPoint, Ownable {
         (uint feeAmount,) = IRelayer(createParam.relayer).getMessageFee(dstChain, createParam.feeParam.feeToken, createParam.feeParam.gasLimit);
         if (createParam.feeParam.feeToken != address(0)) {
             require(createParam.feeParam.amount >= feeAmount, "E4");
-            TransferHelper.safeTransfer2(createParam.feeParam.feeToken, createParam.relayer, createParam.feeParam.amount);
+            TransferHelper.safeTransfer2(createParam.feeParam.feeToken, address(this), createParam.feeParam.amount);
         } else {
             require(msg.value >= feeAmount, "E4");
         }
@@ -47,7 +47,7 @@ contract EndPoint is IEndPoint, Ownable {
         }
 
         ExecParam memory execParam = ExecParam(createParam.wallet, createParam.orderId, createParam.signature, createParam.feeParam, createParam.payParams, createParam.callParams);
-        IRelayer(createParam.relayer).relay(dstChain, execParam);
+        IRelayer(createParam.relayer).relay{value: msg.value}(dstChain, execParam);
         emit OrderCreated(
             createParam
         );
