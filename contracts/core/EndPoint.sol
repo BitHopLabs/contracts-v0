@@ -28,12 +28,16 @@ contract EndPoint is IEndPoint, Ownable {
         require(srcChain == block.chainid, "E3");
 
         (uint feeAmount,) = IRelayer(createParam.relayer).getMessageFee(dstChain, createParam.feeParam.feeToken, createParam.feeParam.gasLimit);
-        require(createParam.feeParam.amount >= feeAmount, "E4");
-        TransferHelper.safeTransfer2(createParam.feeParam.feeToken, address(this), createParam.feeParam.amount);
+        if (createParam.feeParam.feeToken != address(0)) {
+            require(createParam.feeParam.amount >= feeAmount, "E4");
+            TransferHelper.safeTransfer2(createParam.feeParam.feeToken, createParam.relayer, createParam.feeParam.amount);
+        } else {
+            require(msg.value >= feeAmount, "E4");
+        }
 
         for (uint i = 0; i < createParam.payParams.length; i++) {
             if (createParam.payParams[i].amount > 0) {
-                TransferHelper.safeTransfer2(createParam.payParams[i].token, address(this), createParam.payParams[i].amount);
+                TransferHelper.safeTransfer2(createParam.payParams[i].token, createParam.relayer, createParam.payParams[i].amount);
                 if (createParam.payParams[i].token != address(0)) {
                     address tokenOut = tokenMappings[dstChain][createParam.payParams[i].token];
                     require(tokenOut != address(0), "E5");

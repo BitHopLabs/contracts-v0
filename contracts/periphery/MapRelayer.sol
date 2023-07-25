@@ -17,7 +17,7 @@ contract MapRelayer is IRelayer, Ownable {
         mos = _mos;
     }
 
-    function relay(uint dstChain, ExecParam memory execParam) external override {
+    function relay(uint dstChain, ExecParam memory execParam) external payable override {
         IMOSV3.MessageData memory mData = IMOSV3.MessageData(false, IMOSV3.MessageType.CALLDATA, abi.encodePacked(endpoints[dstChain]), abi.encodeWithSelector(IEndPoint.executeOrder.selector, execParam), execParam.feeParam.gasLimit, 0);
 
         (uint256 amount,) = IMOSV3(mos).getMessageFee(dstChain, address(0), execParam.feeParam.gasLimit);

@@ -31,7 +31,12 @@ const config: HardhatUserConfig = {
         },
         polygon: {
             url: 'https://rpc.ankr.com/polygon/12c187efd7ef6e437a404f3b56cd2ef24daeb506b3afc9c9691d75afc98b7183',
-        }
+        },
+        mumbai: {
+            url: 'https://rpc.ankr.com/polygon_mumbai',
+            gas: 10000000,
+            accounts: [`${PRI_KEY}`]
+        },
     },
     solidity: {
         version: "0.8.17",
