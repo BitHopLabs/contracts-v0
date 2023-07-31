@@ -20,6 +20,11 @@ const config: HardhatUserConfig = {
         op: {
             url: 'https://alien-tame-firefly.optimism.discover.quiknode.pro/e406d1013fbe696428f4ae9e77a5a2f48d1426ac/',
         },
+        makalu: {
+            url: 'https://testnet-rpc.maplabs.io',
+            gas: 10000000,
+            accounts: [`${PRI_KEY}`]
+        },
         avax: {
             url: `https://small-palpable-reel.avalanche-mainnet.quiknode.pro/2aa28554a63480222471f355354defe5a5bef17d/ext/bc/C/rpc`,
         },

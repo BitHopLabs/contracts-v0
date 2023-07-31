@@ -4,18 +4,17 @@ import {BigNumber} from "ethers";
 import {abi as TestCallAbi} from "../artifacts/contracts/test/TestCall.sol/TestCall.json";
 
 async function main() {
-
     // dst chain
-    const testCallContract = "0xb8eD16baa9e71d9EE85F30e83Cf1D226732aebDd"
+    const testCallContract = "0xb8eD16baa9e71d9EE85F30e83Cf1D226732aebDd";
     // src chain
-    const mapRelayerContract = "0xA976496f9224A02965824275384A0B09A9d853f3"
+    const mapRelayerContract = "0x29dd2A13D75BB17907b5805F3174B00d82c5b37b";
 
     // src chain
-    const endPoint = await ethers.getContractAt("EndPoint", "0x4c97aA9734f4ea54a58874889Df0a9d6f0589a53");
+    const endPoint = await ethers.getContractAt("EndPoint", "0xC3230E80050f3260080F26821A8D968683Cf5515");
     console.log("endPoint " + endPoint.address);
 
     const signer = new ethers.Wallet("72dcee7bebb7554678b9c4000ce11a3f14000d588176c4f5b8af00657e113dc5");
-    const orderId = genOrderId(80001, 97);
+    const orderId = genOrderId(212, 97);
     console.log("orderId " + orderId);
 
     // logic
@@ -44,7 +43,7 @@ async function main() {
         signature: signMsg,
         feeParam: {
             feeToken: ethers.constants.AddressZero,
-            amount: BigNumber.from("15000000000000000"),
+            amount: BigNumber.from("7500000000000000000"),
             gasLimit: BigNumber.from(500000)
         },
         payParams: [{
@@ -54,28 +53,8 @@ async function main() {
         callParams: callParams
     };
 
-    let tx = await endPoint.createOrder(createParam, {value: ethers.utils.parseEther("0.015")});
+    let tx = await endPoint.createOrder(createParam, {value: ethers.utils.parseEther("7.5")});
     console.log(tx)
-
-    // const execParam = {
-    //     wallet: signer.address,
-    //     orderId: orderId,
-    //     signature: signMsg,
-    //     feeParam: {
-    //         feeToken: ethers.constants.AddressZero,
-    //         amount: BigNumber.from("15000000000000000"),
-    //         gasLimit: BigNumber.from(500000)
-    //     },
-    //     payParams: [{
-    //         token: ethers.constants.AddressZero,
-    //         amount: BigNumber.from(0)
-    //     }],
-    //     callParams: callParams
-    // }
-    //
-    // const mapRelayer = await ethers.getContractAt("MapRelayer", "0xC83544dA67CE2545211bc45c7B9AdF6174525956");
-    // let tx = await mapRelayer.relay(97, execParam, {value: ethers.utils.parseEther("0.015")});
-    // console.log(tx)
 }
 
 main().catch((error) => {

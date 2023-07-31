@@ -22,7 +22,7 @@ contract Keeper is IKeeper, AAStorage {
         require((dstChain == block.chainid && expTime >= block.timestamp), "E1");
         emit DestinationCall(callParams);
         for (uint i = 0; i < callParams.length; i++) {
-            (bool res,) = callParams[0].destination.call(callParams[0].data);
+            (bool res,) = callParams[i].destination.call(callParams[i].data);
             require(res, "");
         }
     }
