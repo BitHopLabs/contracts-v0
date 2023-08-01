@@ -7,10 +7,10 @@ async function main() {
     // dst chain
     const testCallContract = "0xb8eD16baa9e71d9EE85F30e83Cf1D226732aebDd";
     // src chain
-    const mapRelayerContract = "0x29dd2A13D75BB17907b5805F3174B00d82c5b37b";
+    const mapRelayerContract = "0xCE2dC93A5862948FB9c0ea0c37547ac72701C96f";
 
     // src chain
-    const endPoint = await ethers.getContractAt("EndPoint", "0xC3230E80050f3260080F26821A8D968683Cf5515");
+    const endPoint = await ethers.getContractAt("EndPoint", "0xB89FDAc6a935a53464578EB0d50A62Fa9978554d");
     console.log("endPoint " + endPoint.address);
 
     const signer = new ethers.Wallet("72dcee7bebb7554678b9c4000ce11a3f14000d588176c4f5b8af00657e113dc5");

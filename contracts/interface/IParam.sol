@@ -5,11 +5,16 @@ pragma solidity ^0.8.0;
 interface IParam {
 
     event OrderCreated(
-        CreateParam indexed createParam
+        bytes indexed createParam
     );
 
     event OrderExecuted(
-        ExecParam indexed execParam
+        bytes indexed execParam
+    );
+
+    event OrderExecuted1(
+        bytes indexed orderId,
+        bytes indexed message
     );
 
     event DestinationCall(
@@ -24,6 +29,14 @@ interface IParam {
         FeeParam feeParam;
         PayParam[] payParams;
         CallParam[] callParams;
+    }
+
+    struct MapParam {
+        uint256 fromChain;
+        uint256 dstChain;
+        bytes fromAddress;
+        bytes32 orderId;
+        bytes execParam;
     }
 
     struct ExecParam {

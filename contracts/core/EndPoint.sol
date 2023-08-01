@@ -12,15 +12,18 @@ import "../interface/IAAStorage.sol";
 import "./keeper/Keeper.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@mapprotocol/mos/contracts/interface/IMapoExecutor.sol";
 
-contract EndPoint is IEndPoint, Ownable {
+contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
 
     mapping(uint => mapping(address => address)) public tokenMappings;
 
     address public keeper;
+    address public mos;
 
-    constructor(address _keeper) {
+    constructor(address _keeper, address _mos) {
         keeper = _keeper;
+        mos = _mos;
     }
 
     function createOrder(CreateParam memory createParam) external payable {
@@ -46,14 +49,30 @@ contract EndPoint is IEndPoint, Ownable {
             }
         }
 
-        ExecParam memory execParam = ExecParam(createParam.wallet, createParam.orderId, createParam.signature, createParam.feeParam, createParam.payParams, createParam.callParams);
-        IRelayer(createParam.relayer).relay{value: msg.value}(dstChain, execParam);
+        bytes memory payload = abi.encode(createParam.wallet, createParam.orderId, createParam.signature, createParam.feeParam, createParam.payParams, createParam.callParams);
+        IRelayer(createParam.relayer).relay{value: msg.value}(dstChain, payload, createParam.feeParam);
         emit OrderCreated(
-            createParam
+            payload
         );
     }
 
-    function executeOrder(ExecParam memory execParam) external payable {
+    function mapoExecute(
+        uint256 _fromChain,
+        uint256 _toChain,
+        bytes calldata _fromAddress,
+        bytes32 _orderId,
+        bytes calldata _message
+    ) external virtual override returns (bytes memory newMessage){
+        require(_msgSender() == address(mos), "MapoExecutor: invalid mos caller");
+        require(_toChain == block.chainid, "E31");
+        emit OrderExecuted(
+            _message
+        );
+        return _message;
+    }
+
+    function _execute(
+        ExecParam memory execParam) internal {
         address aa = Keeper(keeper).own(execParam.wallet);
         if (aa == address(0)) {
             aa = IKeeper(keeper).create(execParam.wallet, execParam.orderId, execParam.signature, execParam.callParams);
@@ -65,9 +84,6 @@ contract EndPoint is IEndPoint, Ownable {
         }
 
         IAbstractAccount(aa).execute(execParam.wallet, execParam.orderId, execParam.signature, execParam.callParams);
-        emit OrderExecuted(
-            execParam
-        );
     }
 
     function setKeeper(address _keeper) external onlyOwner {

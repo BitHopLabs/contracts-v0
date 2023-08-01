@@ -7,6 +7,4 @@ import "./IParam.sol";
 interface IEndPoint is IParam {
 
     function createOrder(CreateParam memory createParam) external payable;
-
-    function executeOrder(ExecParam memory execParam) external payable;
 }
