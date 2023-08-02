@@ -11,6 +11,7 @@ import "../interface/IKeeper.sol";
 import "../interface/IAbstractAccount.sol";
 import "../interface/IAAStorage.sol";
 import "./keeper/Keeper.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@mapprotocol/mos/contracts/interface/IMapoExecutor.sol";
@@ -35,7 +36,12 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
         uint depositEthFee;
         if (createParam.feeParam.feeToken != address(0)) {
             require(createParam.feeParam.amount >= feeAmount, "E4");
-            Helper._transfer(createParam.feeParam.feeToken, address(this), createParam.feeParam.amount);
+            SafeERC20.safeTransferFrom(
+                IERC20(createParam.feeParam.feeToken),
+                msg.sender,
+                address(this),
+                createParam.feeParam.amount
+            );
         } else {
             require(msg.value >= feeAmount, "E4");
             depositEthFee += feeAmount;
@@ -44,7 +50,12 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
         for (uint i = 0; i < createParam.payParams.length; i++) {
             if (createParam.payParams[i].amount > 0) {
                 if (createParam.payParams[i].token != address(0)) {
-                    Helper._transfer(createParam.payParams[i].token, address(this), createParam.payParams[i].amount);
+                    SafeERC20.safeTransferFrom(
+                        IERC20(createParam.payParams[i].token),
+                        msg.sender,
+                        address(this),
+                        createParam.payParams[i].amount
+                    );
                 } else {
                     require(msg.value >= createParam.payParams[i].amount, "E4");
                     depositEthFee += createParam.payParams[i].amount;
@@ -106,4 +117,8 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
     function setTokenMappings(uint dstChain, address srcToken, address dstToken) external onlyOwner {
         tokenMappings[dstChain][srcToken] = dstToken;
     }
+
+    receive() external payable {}
+
+    fallback() external payable {}
 }

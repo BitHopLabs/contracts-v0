@@ -10,7 +10,7 @@ async function main() {
     const mapRelayerContract = "0x066c03B48ef1b688d096294c671a7C8b9029b7C0";
 
     // src chain
-    const endPoint = await ethers.getContractAt("EndPoint", "0xA31e246777040FE96a3F8DaE9447c917aeC9A10e");
+    const endPoint = await ethers.getContractAt("EndPoint", "0x184c53A5CfD40aF142c97663195c957D10945311");
     console.log("endPoint " + endPoint.address);
 
     const signer = new ethers.Wallet("72dcee7bebb7554678b9c4000ce11a3f14000d588176c4f5b8af00657e113dc5");
@@ -48,14 +48,14 @@ async function main() {
             gasLimit: BigNumber.from(500000)
         },
         payParams: [{
-            token: ethers.constants.AddressZero,
+            token: "0x82Ea4d7676631C3951d9B22eaf1577FE65FbB0d8",
             amount: BigNumber.from("10000000000000000")
         }],
         callParams: callParams
     };
 
     // let tx = await endPoint.createOrder(createParam, {value: ethers.utils.parseEther("7.5")}); // makalu
-    let tx = await endPoint.createOrder(createParam, {value: ethers.utils.parseEther("0.025")}); // mumbai
+    let tx = await endPoint.createOrder(createParam, {value: ethers.utils.parseEther("0.015")}); // mumbai
     console.log(tx)
 }
 
