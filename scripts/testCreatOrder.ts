@@ -7,14 +7,14 @@ async function main() {
     // dst chain
     const testCallContract = "0xb8eD16baa9e71d9EE85F30e83Cf1D226732aebDd";
     // src chain
-    const mapRelayerContract = "0x25d673f26971Bc8f8207B105dDC0bf2b6100d7ac";
+    const mapRelayerContract = "0x066c03B48ef1b688d096294c671a7C8b9029b7C0";
 
     // src chain
-    const endPoint = await ethers.getContractAt("EndPoint", "0xB89FDAc6a935a53464578EB0d50A62Fa9978554d");
+    const endPoint = await ethers.getContractAt("EndPoint", "0xA31e246777040FE96a3F8DaE9447c917aeC9A10e");
     console.log("endPoint " + endPoint.address);
 
     const signer = new ethers.Wallet("72dcee7bebb7554678b9c4000ce11a3f14000d588176c4f5b8af00657e113dc5");
-    const orderId = genOrderId(212, 97);
+    const orderId = genOrderId(80001, 97);
     console.log("orderId " + orderId);
 
     // logic
@@ -43,17 +43,19 @@ async function main() {
         signature: signMsg,
         feeParam: {
             feeToken: ethers.constants.AddressZero,
-            amount: BigNumber.from("7500000000000000000"),
+            // amount: BigNumber.from("7500000000000000000"), // makalu
+            amount: BigNumber.from("15000000000000000"), // mumbai
             gasLimit: BigNumber.from(500000)
         },
         payParams: [{
             token: ethers.constants.AddressZero,
-            amount: BigNumber.from(0)
+            amount: BigNumber.from("10000000000000000")
         }],
         callParams: callParams
     };
 
-    let tx = await endPoint.createOrder(createParam, {value: ethers.utils.parseEther("7.5")});
+    // let tx = await endPoint.createOrder(createParam, {value: ethers.utils.parseEther("7.5")}); // makalu
+    let tx = await endPoint.createOrder(createParam, {value: ethers.utils.parseEther("0.025")}); // mumbai
     console.log(tx)
 }
 

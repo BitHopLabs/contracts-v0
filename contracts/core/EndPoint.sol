@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "../libraries/TransferHelper.sol";
+import "../libraries/Helper.sol";
 import "../libraries/Decoded.sol";
 import "../interface/IRelayer.sol";
 import "../interface/IEndPoint.sol";
@@ -31,16 +32,23 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
         require(srcChain == block.chainid, "E3");
 
         (uint feeAmount,) = IRelayer(createParam.relayer).getMessageFee(dstChain, createParam.feeParam.feeToken, createParam.feeParam.gasLimit);
+        uint depositEthFee;
         if (createParam.feeParam.feeToken != address(0)) {
             require(createParam.feeParam.amount >= feeAmount, "E4");
-            TransferHelper.safeTransfer2(createParam.feeParam.feeToken, address(this), createParam.feeParam.amount);
+            Helper._transfer(createParam.feeParam.feeToken, address(this), createParam.feeParam.amount);
         } else {
             require(msg.value >= feeAmount, "E4");
+            depositEthFee += feeAmount;
         }
 
         for (uint i = 0; i < createParam.payParams.length; i++) {
             if (createParam.payParams[i].amount > 0) {
-                TransferHelper.safeTransfer2(createParam.payParams[i].token, createParam.relayer, createParam.payParams[i].amount);
+                if (createParam.payParams[i].token != address(0)) {
+                    Helper._transfer(createParam.payParams[i].token, address(this), createParam.payParams[i].amount);
+                } else {
+                    require(msg.value >= createParam.payParams[i].amount, "E4");
+                    depositEthFee += createParam.payParams[i].amount;
+                }
                 if (createParam.payParams[i].token != address(0)) {
                     address tokenOut = tokenMappings[dstChain][createParam.payParams[i].token];
                     require(tokenOut != address(0), "E5");
@@ -48,6 +56,8 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
                 }
             }
         }
+
+        require(msg.value >= depositEthFee, "E41");
 
         bytes memory payload = abi.encode(createParam.wallet, createParam.orderId, createParam.signature, createParam.feeParam, createParam.payParams, createParam.callParams);
         IRelayer(createParam.relayer).relay{value: msg.value}(dstChain, payload, createParam.feeParam);
@@ -65,7 +75,7 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
     ) external override returns (bytes memory newMessage){
         require(_msgSender() == address(mos), "MapoExecutor: invalid mos caller");
         require(_toChain == block.chainid, "E31");
-        (address wallet,uint orderId,bytes memory signature,FeeParam memory feeParam,PayParam[] memory payParams,CallParam[] memory callParams) = abi.decode(_message, (address,uint,bytes,FeeParam, PayParam[], CallParam[]));
+        (address wallet,uint orderId,bytes memory signature,FeeParam memory feeParam,PayParam[] memory payParams,CallParam[] memory callParams) = abi.decode(_message, (address, uint, bytes, FeeParam, PayParam[], CallParam[]));
         emit MapExecuted(
             _message
         );
@@ -82,7 +92,7 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
         }
         for (uint i = 0; i < execParam.payParams.length; i++) {
             if (execParam.payParams[i].amount > 0) {
-                TransferHelper.safeTransfer2(execParam.payParams[i].token, aa, execParam.payParams[i].amount);
+                Helper._transfer(execParam.payParams[i].token, aa, execParam.payParams[i].amount);
             }
         }
 
