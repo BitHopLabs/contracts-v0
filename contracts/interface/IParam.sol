@@ -51,7 +51,7 @@ interface IParam {
     struct FeeParam {
         address feeToken;
         uint amount;
-        uint gasLimit;
+        uint256 gasLimit;
     }
 
     struct PayParam {

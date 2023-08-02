@@ -5,20 +5,9 @@ import {abi as TestCallAbi} from "../artifacts/contracts/test/TestCall.sol/TestC
 
 async function main() {
 
-    const EndPoint = await ethers.getContractFactory("EndPoint", {
-        libraries: {
-            Decoded: "0x7651A9D3b8dF67607d31e1d34e3056746b3A3AaC",
-        },
-    });
-    const endPoint = await EndPoint.deploy("0x3C076204Ee78C761BBE00d6461A388b467A4b9C8");
-    await endPoint.deployed();
-    console.log("endPoint " + endPoint.address);
-
-    const MapRelayer = await ethers.getContractFactory("MapRelayer");
-    const mapRelayer = await MapRelayer.deploy("0x8C3cCc219721B206DA4A2070fD96E4911a48CB4f");
-    await mapRelayer.deployed();
-    await mapRelayer.setEndpoint(97, "0x1D75c71a78cc5a260d1aa37AcfEb0e323504CB44");
-    console.log("mapRelayer " + mapRelayer.address);
+    const iMapoExecutor = await ethers.getContractAt("IMapoExecutor", "0x09a53D20F17A5eacbaDF7b3Fc8B0e9B13A4a7FFe");
+    const tx = await iMapoExecutor.mapoExecute(212,97,"0x6f66A7bDeBF0aB4df345fc5f12384072e5Aab620","0x5f8a85001acc8034c3d57a61d36b33f0fea100774e2af96a16e94d3f1f7da4a3","0x6f66A7bDeBF0aB4df345fc5f12384072e5Aab620");
+    console.log(tx)
 }
 
 main().catch((error) => {

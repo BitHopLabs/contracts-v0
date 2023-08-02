@@ -7,8 +7,8 @@ import {mos} from "../typechain-types/@mapprotocol";
 async function main() {
 
     const mos = "0x8C3cCc219721B206DA4A2070fD96E4911a48CB4f";
-    const decoded = "0x54Af2FE830A16635c6A64E5A97604902E6e7c58A";
-    const keeper = "0x51a180ee4Dc6Dfd77ac180DbF30b303f87c35F22";
+    const decoded = "0xc4Ac28584Ca9E9A19CCBEadFf6faDfCAE05Fe087";
+    const keeper = "0xa60860aCD850A22F19C125517a24c92cc8c61074";
 
     const EndPoint = await ethers.getContractFactory("EndPoint", {
         libraries: {
@@ -19,10 +19,10 @@ async function main() {
     await endPoint.deployed();
     console.log("endPoint " + endPoint.address);
 
-    const MapRelayer = await ethers.getContractFactory("MapRelayer");
-    const mapRelayer = await MapRelayer.deploy(mos);
-    await mapRelayer.deployed();
-    console.log("mapRelayer " + mapRelayer.address);
+    // const MapRelayer = await ethers.getContractFactory("MapRelayer");
+    // const mapRelayer = await MapRelayer.deploy(mos);
+    // await mapRelayer.setEndpoint(97, "0x819Ee5bff83ACA8BbBBb5e3f477E1BDA41879134");
+    // console.log("mapRelayer " + mapRelayer.address);
 }
 
 main().catch((error) => {

@@ -3,8 +3,9 @@
 pragma solidity ^0.8.0;
 
 import "../interface/IRelayer.sol";
-import "../interface/IMOSV3.sol";
 import "../libraries/TransferHelper.sol";
+import "../libraries/Helper.sol";
+import "@mapprotocol/mos/contracts/interface/IMOSV3.sol";
 import "@mapprotocol/mos/contracts/interface/IMapoExecutor.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -19,7 +20,8 @@ contract MapRelayer is IRelayer, Ownable {
     }
 
     function relay(uint dstChain, bytes memory payload, FeeParam calldata feeParam) external payable override {
-        IMOSV3.MessageData memory mData = IMOSV3.MessageData(false, IMOSV3.MessageType.MESSAGE, abi.encodePacked(endpoints[dstChain]), payload, feeParam.gasLimit, 0);
+        bytes memory target = Helper._toBytes(endpoints[dstChain]);
+        IMOSV3.MessageData memory mData = IMOSV3.MessageData(false, IMOSV3.MessageType.MESSAGE, target, payload, feeParam.gasLimit, 0);
 
         (uint256 amount,) = IMOSV3(mos).getMessageFee(dstChain, address(0), feeParam.gasLimit);
 

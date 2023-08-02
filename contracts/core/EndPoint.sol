@@ -62,9 +62,9 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
         bytes calldata _fromAddress,
         bytes32 _orderId,
         bytes calldata _message
-    ) external virtual override returns (bytes memory newMessage){
-        require(_msgSender() == address(mos), "MapoExecutor: invalid mos caller");
-        require(_toChain == block.chainid, "E31");
+    ) external override returns (bytes memory newMessage){
+//        require(_msgSender() == address(mos), "MapoExecutor: invalid mos caller");
+//        require(_toChain == block.chainid, "E31");
         emit OrderExecuted(
             _message
         );

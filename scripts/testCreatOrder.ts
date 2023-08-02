@@ -7,7 +7,7 @@ async function main() {
     // dst chain
     const testCallContract = "0xb8eD16baa9e71d9EE85F30e83Cf1D226732aebDd";
     // src chain
-    const mapRelayerContract = "0xCE2dC93A5862948FB9c0ea0c37547ac72701C96f";
+    const mapRelayerContract = "0x25d673f26971Bc8f8207B105dDC0bf2b6100d7ac";
 
     // src chain
     const endPoint = await ethers.getContractAt("EndPoint", "0xB89FDAc6a935a53464578EB0d50A62Fa9978554d");
