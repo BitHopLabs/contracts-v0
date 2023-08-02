@@ -63,11 +63,14 @@ contract EndPoint is IEndPoint, Ownable, IMapoExecutor {
         bytes32 _orderId,
         bytes calldata _message
     ) external override returns (bytes memory newMessage){
-//        require(_msgSender() == address(mos), "MapoExecutor: invalid mos caller");
-//        require(_toChain == block.chainid, "E31");
-        emit OrderExecuted(
+        require(_msgSender() == address(mos), "MapoExecutor: invalid mos caller");
+        require(_toChain == block.chainid, "E31");
+        (address wallet,uint orderId,bytes memory signature,FeeParam memory feeParam,PayParam[] memory payParams,CallParam[] memory callParams) = abi.decode(_message, (address,uint,bytes,FeeParam, PayParam[], CallParam[]));
+        emit MapExecuted(
             _message
         );
+        ExecParam memory execParam = ExecParam(wallet, orderId, signature, feeParam, payParams, callParams);
+        _execute(execParam);
         return _message;
     }
 

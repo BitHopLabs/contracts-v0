@@ -8,13 +8,8 @@ interface IParam {
         bytes indexed createParam
     );
 
-    event OrderExecuted(
+    event MapExecuted(
         bytes indexed execParam
-    );
-
-    event OrderExecuted1(
-        bytes indexed orderId,
-        bytes indexed message
     );
 
     event DestinationCall(

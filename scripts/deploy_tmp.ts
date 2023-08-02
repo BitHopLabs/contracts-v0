@@ -5,9 +5,14 @@ import {abi as TestCallAbi} from "../artifacts/contracts/test/TestCall.sol/TestC
 
 async function main() {
 
-    const iMapoExecutor = await ethers.getContractAt("IMapoExecutor", "0x09a53D20F17A5eacbaDF7b3Fc8B0e9B13A4a7FFe");
-    const tx = await iMapoExecutor.mapoExecute(212,97,"0x6f66A7bDeBF0aB4df345fc5f12384072e5Aab620","0x5f8a85001acc8034c3d57a61d36b33f0fea100774e2af96a16e94d3f1f7da4a3","0x6f66A7bDeBF0aB4df345fc5f12384072e5Aab620");
-    console.log(tx)
+    const EndPoint = await ethers.getContractFactory("EndPoint", {
+        libraries: {
+            Decoded: "0x7651A9D3b8dF67607d31e1d34e3056746b3A3AaC",
+        },
+    });
+    const endPoint = await EndPoint.deploy("0x3C076204Ee78C761BBE00d6461A388b467A4b9C8");
+    await endPoint.deployed();
+    console.log("endPoint " + endPoint.address);
 }
 
 main().catch((error) => {
