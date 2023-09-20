@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const PRI_KEY = process.env.PRI_KEY;
+const PRI_KEY = process.env.PRI_KEY_TESTNET;
+// const PRI_KEY = process.env.PRI_KEY_MAINNET;
 
 const config: HardhatUserConfig = {
     networks: {
@@ -30,15 +31,24 @@ const config: HardhatUserConfig = {
         },
         bsc: {
             url: 'https://burned-clean-crater.bsc.quiknode.pro/5cacde470dbfb4087eab934b54e6b05fc59e1e92/',
+            gas: 10000000,
+            accounts: [`${PRI_KEY}`]
         },
         arbGoerli: {
             url: 'https://goerli-rollup.arbitrum.io/rpc',
         },
         polygon: {
             url: 'https://rpc.ankr.com/polygon/12c187efd7ef6e437a404f3b56cd2ef24daeb506b3afc9c9691d75afc98b7183',
+            gas: 10000000,
+            accounts: [`${PRI_KEY}`]
         },
         mumbai: {
             url: 'https://rpc.ankr.com/polygon_mumbai',
+            gas: 10000000,
+            accounts: [`${PRI_KEY}`]
+        },
+        xrpTestnet: {
+            url: 'https://rpc-evm-sidechain.xrpl.org',
             gas: 10000000,
             accounts: [`${PRI_KEY}`]
         },

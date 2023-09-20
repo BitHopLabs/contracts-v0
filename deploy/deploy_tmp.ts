@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {genOrderId} from "./common";
+import {genOrderId} from "../scripts/common";
 import {BigNumber} from "ethers";
 import {abi as TestCallAbi} from "../artifacts/contracts/test/TestCall.sol/TestCall.json";
 
